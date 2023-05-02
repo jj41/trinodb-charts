@@ -25,6 +25,9 @@ spec:
     spec:
       serviceAccountName: {{ include "trino.serviceAccountName" . }}
       volumes:
+        - name: catalog-pvc-volume
+          persistentVolumeClaim:
+            claimName: trino-catalog-pvc
         - name: config-volume
           configMap:
             name: {{ template "trino.worker" . }}
@@ -50,7 +53,7 @@ spec:
             - mountPath: {{ .Values.server.config.path }}
               name: config-volume
             - mountPath: {{ .Values.server.config.path }}/catalog
-              name: catalog-volume
+              name: catalog-pvc-volume
             - mountPath: {{ .Values.kafka.mountPath }}
               name: schemas-volume
           ports:

@@ -26,8 +26,12 @@ spec:
       securityContext:
         runAsUser: {{ .runAsUser }}
         runAsGroup: {{ .runAsGroup }}
+        fsGroup: {{ .fsGroup }}
       {{- end }}
       volumes:
+        - name: catalog-pvc-volume
+          persistentVolumeClaim:
+            claimName: trino-catalog-pvc
         - name: config-volume
           configMap:
             name: {{ template "trino.coordinator" . }}
@@ -68,7 +72,7 @@ spec:
             - mountPath: {{ .Values.server.config.path }}
               name: config-volume
             - mountPath: {{ .Values.server.config.path }}/catalog
-              name: catalog-volume
+              name: catalog-pvc-volume
             - mountPath: {{ .Values.kafka.mountPath }}
               name: schemas-volume
             {{- if .Values.accessControl }}{{- if eq .Values.accessControl.type "configmap" }}
